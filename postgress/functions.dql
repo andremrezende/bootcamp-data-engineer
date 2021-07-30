@@ -1,0 +1,40 @@
+-- não permite nulo e retornará nulo
+create or replace function  func_somar(integer, integer)
+returns integer
+security definer -- executar com permissões do criador da funcao
+returns null on null input
+language sql 
+as $$
+  select $1 + $2
+$$;
+
+select func_somar(null, null);
+
+-- permite nulo nos parâmetros
+create or replace function  func_somar(integer, integer)
+returns integer
+security definer -- executar com permissões do criador da funcao
+called on null input 
+language sql 
+as $$
+  select coalesce($1, 100) + coalesce($2, 100)
+$$;
+
+select func_somar(null, null);
+
+-- utilizando linguagem PLPGSQL
+create or replace function bancos_add(p_numero integer, p_nome varchar, p_ativo boolean)
+returns integer
+security invoker
+language plpgsql
+called on null input
+as $$
+declare variavel_id integer;
+BEGIN
+	select into variavel_id numero
+	from bancos_add;
+	return variavel_id;
+END;
+$$;
+
+select bancos_add(1, 'Novo Banco', false);
